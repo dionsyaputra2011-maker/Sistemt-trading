@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DION ELITE v21.6 | MT5 COMMANDER 📈💎</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0f1c;
+            --bg-gradient: linear-gradient(135deg, #0a0f1c, #111827);
+            --card-bg: #172036;
+            --accent: #00d4ff;
+            --accent-glow: rgba(0, 212, 255, 0.45);
+            --accent-dark: #0099cc;
+            --green: #10e981;
+            --red: #ff4d4d;
+            --border: #1f2a44;
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --input-bg: #0f1624;
+            --shadow-soft: 0 10px 35px rgba(0, 0, 0, 0.6);
+            --shadow-glow: 0 0 40px rgba(0, 212, 255, 0.35);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: var(--bg-gradient); color: var(--text-primary); font-family: 'Plus Jakarta Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
+        #loader {
+            position: fixed; inset: 0; z-index: 9999;
+            background: linear-gradient(135deg, #000428, #004e92);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            color: var(--accent); font-size: 32px; font-weight: 800; letter-spacing: 3px;
+            transition: opacity 1.2s ease;
+        }
+        #loader.hidden { opacity: 0; pointer-events: none; }
+        .loader-title { font-size: 48px; text-shadow: 0 0 35px var(--accent-glow); margin-bottom: 20px; }
+        .loader-candles { font-size: 120px; display: flex; gap: 40px; margin: 30px 0; }
+        .candle { animation: candleFloat 4s infinite ease-in-out; text-shadow: 0 0 45px var(--accent-glow); }
+        .candle:nth-child(2) { animation-delay: 0.8s; }
+        .candle:nth-child(3) { animation-delay: 1.6s; }
+        @keyframes candleFloat { 0%, 100% { transform: translateY(0) rotate(0deg) scale(1); } 50% { transform: translateY(-25px) rotate(3deg) scale(1.1); } }
+        .loader-subtitle { font-size: 20px; opacity: 0.9; margin-top: 15px; letter-spacing: 1.5px; }
+        .header-top {
+            position: fixed; top: 0; width: 100%; z-index: 1000;
+            background: linear-gradient(to bottom, #000, #0a0f1c); border-bottom: 4px solid var(--accent);
+            box-shadow: 0 8px 45px rgba(0, 212, 255, 0.3);
+        }
+        .ticker-bar { height: 65px; background: #000; overflow: hidden; border-bottom: 1px solid var(--border); }
+        nav {
+            display: flex; justify-content: center; gap: 20px; padding: 15px 0;
+            background: rgba(23, 32, 54, 0.96); backdrop-filter: blur(25px);
+        }
+        .nav-btn {
+            padding: 12px 28px; border-radius: 20px; border: 2px solid transparent;
+            background: rgba(255,255,255,0.06); color: #c3d2ff; font-weight: 700; font-size: 14px;
+            cursor: pointer; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            text-transform: uppercase; letter-spacing: 1.2px;
+        }
+        .nav-btn:hover {
+            background: rgba(0, 212, 255, 0.25); color: white;
+            transform: translateY(-4px) scale(1.06); box-shadow: 0 0 35px var(--accent-glow);
+        }
+        .nav-btn.active {
+            background: linear-gradient(135deg, var(--accent), var(--accent-dark)); color: #000;
+            border-color: var(--accent); box-shadow: 0 0 40px var(--accent-glow);
+            transform: scale(1.1);
+        }
+        .main-container {
+            padding: 160px 40px 80px; max-width: 1800px; margin: 0 auto;
+        }
+        .page { display: none; animation: fadeInUp 1s ease-out; }
+        .page.active { display: grid; grid-template-columns: repeat(auto-fit, minmax(560px, 1fr)); gap: 40px; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(50px); } to { opacity: 1; transform: translateY(0); } }
+        .card {
+            background: var(--card-bg); border: 1px solid var(--border); border-radius: 28px;
+            padding: 40px; box-shadow: var(--shadow-soft), var(--shadow-glow);
+            position: relative; overflow: hidden; transition: all 0.5s ease;
+        }
+        .card::before {
+            content: ""; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle at 30% 20%, rgba(0, 212, 255, 0.18) 0%, transparent 60%);
+            pointer-events: none; animation: glowRotate 30s linear infinite;
+        }
+        @keyframes glowRotate { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .card:hover { transform: translateY(-15px) scale(1.02); box-shadow: 0 25px 80px rgba(0, 0, 0, 0.8), 0 0 55px var(--accent-glow); }
+        h2 {
+            font-size: 28px; color: var(--accent); margin-bottom: 32px; font-weight: 800;
+            letter-spacing: 1.5px; text-shadow: 0 0 20px var(--accent-glow);
+            display: flex; align-items: center; gap: 14px;
+        }
+        label { display: block; font-size: 13px; color: #b0cfff; margin-bottom: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+        .input-pro, select.input-pro {
+            width: 100%; padding: 16px 20px; background: var(--input-bg); border: 2px solid var(--border);
+            border-radius: 16px; color: white; font-size: 16px; outline: none; transition: all 0.4s ease;
+        }
+        .input-pro:focus, select.input-pro:focus {
+            border-color: var(--accent); box-shadow: 0 0 30px var(--accent-glow); background: #0e1a2e;
+        }
+        .btn-main {
+            width: 100%; padding: 18px; border: none; border-radius: 18px;
+            background: linear-gradient(135deg, var(--accent), #00b3e6); color: #000;
+            font-weight: 800; font-size: 17px; cursor: pointer; transition: all 0.4s ease;
+            text-transform: uppercase; letter-spacing: 1.5px; box-shadow: 0 10px 35px rgba(0, 212, 255, 0.4);
+        }
+        .btn-main:hover {
+            transform: translateY(-5px) scale(1.03); box-shadow: 0 20px 60px var(--accent-glow);
+            background: linear-gradient(135deg, #00e6ff, var(--accent));
+        }
+        .sig-box {
+            padding: 36px; border-radius: 22px; text-align: center; font-size: 32px; font-weight: 900;
+            margin-top: 32px; display: none; border: 3px solid; animation: pulseElite 2.5s infinite;
+            box-shadow: 0 0 45px var(--accent-glow);
+        }
+        @keyframes pulseElite { 0%, 100% { opacity: 0.92; transform: scale(1); } 50% { opacity: 1; transform: scale(1.05); } }
+        .buy-sig { background: rgba(16, 233, 129, 0.2); color: var(--green); border-color: var(--green); }
+        .sell-sig { background: rgba(255, 77, 77, 0.2); color: var(--red); border-color: var(--red); }
+        .check-grid { display: flex; flex-direction: column; gap: 18px; }
+        .check-item {
+            padding: 22px 30px; background: rgba(255,255,255,0.05); border: 2px solid var(--border);
+            border-radius: 18px; cursor: pointer; transition: all 0.4s ease; font-size: 16px; font-weight: 500;
+        }
+        .check-item:hover { background: rgba(0, 212, 255, 0.15); border-color: var(--accent); transform: translateX(8px); }
+        .check-item.active { border-color: var(--accent); background: rgba(0, 212, 255, 0.2); box-shadow: 0 0 35px var(--accent-glow); color: white; }
+        @media (max-width: 1100px) {
+            .page.active { grid-template-columns: 1fr; }
+            .main-container { padding: 150px 20px 60px; }
+            nav { gap: 15px; flex-wrap: wrap; }
+        }
+    </style>
+</head>
+<body onclick="enableAudio()" onload="initVoice()">
+    <div id="loader">
+        <div class="loader-candles">
+            <span class="candle">📈</span><span class="candle">📉</span><span class="candle">📈</span>
+        </div>
+        <div class="loader-title">TRADING SYSTEM KAPTEN DION 💎</div>
+        <div class="loader-subtitle">Elite Terminal v21.6 • Loading... 📊</div>
+    </div>
+    <div class="header-top">
+        <!-- Ticker baru dari TradingView custom script lu (7-14 symbols utama) -->
+        <div class="ticker-bar">
+            <script type="module" src="https://widgets.tradingview-widget.com/w/en/tv-ticker-tape.js"></script>
+            <tv-ticker-tape 
+                symbols='IDX:COMPOSITE,FX_IDC:USDIDR,FOREXCOM:NAS100,FOREXCOM:SPX500,FOREXCOM:XAUUSD,FOREXCOM:XAGUSD,FOREXCOM:USDJPY,FOREXCOM:USDCHF,FOREXCOM:USDCAD,FOREXCOM:GBPJPY,FOREXCOM:GBPUSD,FOREXCOM:EURUSD,FOREXCOM:AUDUSD,FOREXCOM:NZDUSD'
+                hide-chart>
+            </tv-ticker-tape>
+        </div>
+        <nav>
+            <button class="nav-btn active" onclick="tab('news')">📰 NEWS ENGINE</button>
+            <button class="nav-btn" onclick="tab('calc')">💰 KALKULATOR LOT</button>
+            <button class="nav-btn" onclick="tab('entry')">CHECKLIST ENTRY MARKET</button>
+        </nav>
+    </div>
+    <div class="main-container">
+        <section id="p-news" class="page active">
+            <div class="card">
+                <h2>🖥️ News Prediction Terminal 📊</h2>
+                <div class="field">
+                    <label>TIPE DATA RILIS</label>
+                    <select id="n-type" class="input-pro">
+                        <option value="std">Ekonomi Umum (CPI, GDP, NFP)</option>
+                        <option value="job">Pengangguran (Unemployment)</option>
+                        <option value="jpy">Suku Bunga / Kebijakan Bank</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label>DAMPAK</label>
+                    <select id="n-impact" class="input-pro">
+                        <option value="high">High Impact (Kuat)</option>
+                        <option value="medium">Medium Impact (Sedang)</option>
+                        <option value="low">Low Impact (Biasa)</option>
+                    </select>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+                    <div class="field"><label>PREVIOUS</label><input type="number" id="n-prev" class="input-pro" placeholder="Nilai Sebelumnya"></div>
+                    <div class="field"><label>FORECAST</label><input type="number" id="n-forc" class="input-pro" placeholder="Ramalan"></div>
+                </div>
+                <div class="field"><label>ACTUAL (RILIS AKTUAL)</label><input type="number" id="n-act" class="input-pro" placeholder="Masukkan Nilai Aktual"></div>
+                <button class="btn-main" onclick="predict()">PREDIKSI ARAH 🔊 🟢🔴</button>
+                <div id="n-res" class="sig-box">---</div>
+            </div>
+            <div class="card">
+                <h2>📅 Economic Calendar Live (Investing.com)</h2>
+                <iframe src="https://www.investing.com/economic-calendar/" width="100%" height="680" frameborder="0" style="border-radius:20px; background:transparent;"></iframe>
+                <p style="font-size:12px; color:var(--text-secondary); text-align:center; margin-top:10px;">Kalau iframe lambat, buka langsung investing.com/economic-calendar untuk full view.</p>
+            </div>
+        </section>
+        <section id="p-calc" class="page">
+            <div class="card">
+                <h2>💎 Kalkulator Lot Sultan</h2>
+                <div class="field">
+                    <label>Jenis Akun</label>
+                    <select id="acc-type" class="input-pro">
+                        <option value="100000">Standard (1 lot = 100,000 unit)</option>
+                        <option value="10000">Mini (1 lot = 10,000 unit)</option>
+                        <option value="1000">Micro (1 lot = 1,000 unit)</option>
+                        <option value="100">Cent (1 lot = 100 unit)</option>
+                    </select>
+                </div>
+                <div class="field"><label>Saldo Akun (USD)</label><input type="number" id="c-bal" class="input-pro" value="1000"></div>
+                <div class="field"><label>Risk per Trade (%)</label><input type="number" id="c-risk" class="input-pro" value="1"></div>
+                <div class="field"><label>Stop Loss (Pips)</label><input type="number" id="c-sl" class="input-pro" placeholder="Contoh: 40 - 60"></div>
+                <div class="field"><label>Pip Value ($ per lot)</label><input type="number" id="pip-val" class="input-pro" value="10" placeholder="Default 10 untuk majors"></div>
+                <button class="btn-main" onclick="calcLot()">HITUNG LOT 💎</button>
+            </div>
+            <div class="card" style="text-align:center; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+                <h2>Lot Rekomendasi 📏</h2>
+                <div id="res-lot" style="font-size:140px; font-weight:900; color:var(--accent); margin:30px 0; text-shadow:0 0 30px var(--accent-glow);">0.00</div>
+                <div id="res-money" style="font-size:32px; color:var(--red); font-weight:700;">$0.00 Risk Amount</div>
+            </div>
+        </section>
+        <section id="p-entry" class="page">
+            <div class="card">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:32px;">
+                    <h2>✈️ Checklist Entry Market ✅</h2>
+                    <button onclick="resetEntry()" style="background:var(--red); color:white; border:none; padding:12px 28px; border-radius:14px; cursor:pointer; font-weight:700; font-size:15px;">RESET CHECKLIST 🔄</button>
+                </div>
+                <div class="check-grid">
+                    <div class="check-item" onclick="toggle(this, 'Struktur Market')">Struktur Market Searah (H4/H1) 📊</div>
+                    <div class="check-item" onclick="toggle(this, 'SNR / SnD')">Harga di Area SNR / SnD Valid 📍</div>
+                    <div class="check-item" onclick="toggle(this, 'Fibonacci')">Fibonacci Level 61.8 - 78.6 Terpijak 📐</div>
+                    <div class="check-item" onclick="toggle(this, 'Candle Konfirmasi')">Konfirmasi Candle (Engulfing/Pinbar) 🕯️</div>
+                    <div class="check-item" onclick="toggle(this, 'Risk Reward')">Risk to Reward Minimal 1:2 ⚖️</div>
+                    <div class="check-item" onclick="toggle(this, 'Psikologi')">Zero FOMO / Psikologi Tenang 🧠</div>
+                </div>
+                <div id="st-pill" class="sig-box" style="display:block; font-size:30px; margin-top:40px;">STATUS: MENUNGGU SYARAT... ❌</div>
+            </div>
+        </section>
+    </div>
+    <script>
+        let voiceEnabled = false;
+        const synth = window.speechSynthesis;
+        function enableAudio() { voiceEnabled = true; }
+        function speak(text) {
+            if (!voiceEnabled) return;
+            if (synth.speaking) synth.cancel();
+            const msg = new SpeechSynthesisUtterance(text);
+            msg.lang = 'id-ID';
+            msg.rate = 1.2;
+            synth.speak(msg);
+        }
+        function initVoice() {
+            setTimeout(() => {
+                speak("Siap Kapten Dion! Terminal Elite v21.6 aktif. Siap trading.");
+                document.getElementById('loader').classList.add('hidden');
+            }, 3000);
+        }
+        function tab(id) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('p-' + id).classList.add('active');
+            event.currentTarget.classList.add('active');
+            speak("Pindah ke " + id.replace(/([A-Z])/g, ' $1').toUpperCase() + ".");
+        }
+        function predict() {
+            const act = parseFloat(document.getElementById('n-act').value);
+            const forc = parseFloat(document.getElementById('n-forc').value);
+            const prev = parseFloat(document.getElementById('n-prev').value);
+            const type = document.getElementById('n-type').value;
+            const impact = document.getElementById('n-impact').value;
+            const res = document.getElementById('n-res');
+            if (isNaN(act) || isNaN(forc) || isNaN(prev)) return alert("Masukkan Previous, Forecast, dan Actual lengkap!");
+            res.style.display = "block";
+            const deviation = Math.abs(act - forc);
+            const expectedMove = Math.abs(prev - forc);
+            let strengthLevel = "BIASA";
+            if (expectedMove > 0) {
+                const ratio = deviation / expectedMove;
+                if (ratio > 0.8) strengthLevel = "KUAT";
+                else if (ratio > 0.3) strengthLevel = "SEDANG";
+            }
+            let bull = (type === 'job') ? act < forc : act > forc;
+            let sigText = bull ? `BUY / ${strengthLevel} 🟢📈` : `SELL / ${strengthLevel} 🔴📉`;
+            res.innerText = sigText;
+            res.className = "sig-box " + (bull ? "buy-sig" : "sell-sig");
+            speak(`Kapten Dion, sinyal ${bull ? 'BUY' : 'SELL'} ${strengthLevel.toLowerCase()}.`);
+        }
+        function calcLot() {
+            const acc = parseFloat(document.getElementById('acc-type').value);
+            const bal = parseFloat(document.getElementById('c-bal').value);
+            const risk = parseFloat(document.getElementById('c-risk').value);
+            const sl = parseFloat(document.getElementById('c-sl').value);
+            const pipVal = parseFloat(document.getElementById('pip-val').value) || 10;
+            if (!bal || !sl || sl <= 0) {
+                speak("Kapten Dion, periksa saldo dan stop loss harus lebih dari 0.");
+                return;
+            }
+            const riskMoney = bal * (risk / 100);
+            const lot = (riskMoney / (sl * pipVal)) * (100000 / acc);
+            document.getElementById('res-lot').innerText = lot.toFixed(2);
+            document.getElementById('res-money').innerText = "$" + riskMoney.toFixed(2) + " Risk";
+            speak("Kapten Dion, lot rekomendasi: " + lot.toFixed(2) + " lot. Risk terkendali.");
+        }
+        function toggle(el, name) {
+            el.classList.toggle('active');
+            if (el.classList.contains('active')) {
+                speak(name + " siap, Kapten Dion.");
+            }
+            const count = document.querySelectorAll('.check-item.active').length;
+            const pill = document.getElementById('st-pill');
+            if (count === 6) {
+                pill.className = "sig-box buy-sig";
+                pill.innerText = "ENTRY BOLEH DILAKUKAN! ✅💥";
+                speak("Kapten Dion, semua syarat terpenuhi. Entry boleh dilakukan.");
+                confettiEffect();
+            } else {
+                pill.className = "sig-box";
+                pill.innerText = `MENUNGGU (${count}/6) ❌`;
+            }
+        }
+        function resetEntry() {
+            document.querySelectorAll('.check-item').forEach(i => i.classList.remove('active'));
+            document.getElementById('st-pill').className = "sig-box";
+            document.getElementById('st-pill').innerText = "STATUS: MENUNGGU SYARAT... ❌";
+            speak("Checklist direset, Kapten Dion.");
+        }
+        function confettiEffect() {
+            for (let i = 0; i < 120; i++) {
+                let conf = document.createElement('div');
+                conf.style.position = 'fixed';
+                conf.style.left = Math.random() * 100 + 'vw';
+                conf.style.top = '-20px';
+                conf.style.width = '12px';
+                conf.style.height = '12px';
+                conf.style.background = `hsl(${Math.random() * 360}, 100%, 60%)`;
+                conf.style.borderRadius = '50%';
+                conf.style.zIndex = '9998';
+                conf.style.pointerEvents = 'none';
+                conf.animate([
+                    { transform: 'translateY(0) rotate(0deg)' },
+                    { transform: 'translateY(100vh) rotate(720deg)' }
+                ], { duration: 3200, easing: 'linear' });
+                document.body.appendChild(conf);
+                setTimeout(() => conf.remove(), 3200);
+            }
+        }
+    </script>
+</body>
+</html>
